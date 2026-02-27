@@ -2,6 +2,38 @@
 Triton Benefits & HR Solutions | Employee Census Generator
 Reduces manual census processing from 2.5 hours → 4 minutes
 
+**Version:** 1.0.0
+**Repo:** https://github.com/Mgmoney007/CensusIQ.git
+**Branch:** main
+
+---
+
+## Progress Tracker
+
+### Phase 0: Foundation — COMPLETE
+- [x] 0.1 — `.gitignore` created
+- [x] 0.2 — Initial git commit (`472a247`)
+- [x] 0.3 — Dependencies pinned (`==` versions), added `python-dotenv`, `waitress`
+- [x] 0.4 — `pyproject.toml` added (v1.0.0 metadata + pytest config)
+
+### Phase 1: Stability & Quality — NEXT UP
+- [ ] 1.1 — Configuration management (`.env` + `python-dotenv`)
+- [ ] 1.2 — Logging infrastructure (`RotatingFileHandler`)
+- [ ] 1.3 — Error handling improvements (Flask error handlers, structured errors)
+- [ ] 1.4 — Health check endpoint (`GET /health`)
+- [ ] 1.5 — Production server setup (`wsgi.py` + `waitress`)
+- [ ] 1.6 — Testing infrastructure (pytest, >70% coverage target)
+- [ ] 1.7 — CI/CD pipeline (GitHub Actions)
+
+### Phase 2: Feature Completion — PLANNED
+- [ ] 2.1 — Reconcile Excel export
+- [ ] 2.2 — `rapidfuzz` name matching upgrade
+- [ ] 2.3 — DOB/hire date from invoice side in reconcile
+- [ ] 2.4–2.6 — BCBS, Aetna, Cigna OCR parsers (blocked: need sample invoices)
+
+### Phase 3–5: UX Polish, Deployment, Growth — PLANNED
+See `PLAN.md` for full details.
+
 ---
 
 ## Stack
@@ -9,6 +41,8 @@ Reduces manual census processing from 2.5 hours → 4 minutes
 - **Excel/CSV:** pandas + openpyxl
 - **PDF (text-based):** pdfplumber
 - **PDF (image/scanned):** pdf2image + pytesseract (OCR)
+- **Config:** python-dotenv (added, not yet wired)
+- **Production server:** waitress (added, not yet wired)
 - **Frontend:** Single-file vanilla JS in `templates/index.html` — no bundler, no framework
 - **State:** In-memory `session_data` dict — no database
 
@@ -23,9 +57,14 @@ python -c "from app import X; ..."   # quick unit tests
 censusiq/
 ├── app.py                 # ALL backend logic + routes (single file)
 ├── templates/index.html   # ENTIRE frontend (single file)
-├── requirements.txt
-├── uploads/               # temp uploaded files
-└── exports/               # generated .xlsx and .zip files
+├── requirements.txt       # pinned == versions
+├── pyproject.toml         # project metadata + pytest config
+├── CLAUDE.md              # this file — project memory for Claude Code
+├── PLAN.md                # full development roadmap (Phases 0-5)
+├── README.md              # user-facing project description
+├── .gitignore             # excludes uploads/, exports/, logs/, .env, etc.
+├── uploads/               # temp uploaded files (gitignored)
+└── exports/               # generated .xlsx and .zip files (gitignored)
 ```
 
 ---
@@ -174,8 +213,9 @@ Internal metadata fields prefixed with `_`: `_source`, `_source_type`,
 ---
 
 ## Planned / Not Yet Built
-- Multi-group management (currently one group per session)
-- Aetna, BCBS, Cigna invoice OCR parsers
-- Reconcile Excel export (currently CSV only)
-- DOB and hire date columns in reconcile table from invoice side
-- `rapidfuzz` upgrade for name matching (currently regex-based)
+- **Phase 1 (next):** .env config, logging, error handlers, health check, wsgi.py, tests, CI/CD
+- **Phase 2:** Reconcile Excel export, rapidfuzz matching, DOB/hire in reconcile, carrier OCR parsers
+- **Phase 3:** Mobile responsive, accessibility (WCAG 2.1 AA), table pagination, keyboard shortcuts
+- **Phase 4:** Docker, cloud deploy, PyInstaller .exe packaging
+- **Phase 5:** Multi-group management, auth, REST API, batch processing, audit trail
+- See `PLAN.md` for full task breakdown with file references and complexity ratings
