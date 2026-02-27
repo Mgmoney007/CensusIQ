@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CensusIQ — Triton Benefits</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0d1b2a;
+  --navy-mid: #1a2d42;
+  --navy-light: #243b55;
+  --teal: #00c9a7;
+  --teal-dim: #009e85;
+  --amber: #f5a623;
+  --red: #e85d5d;
+  --green: #2ecc71;
+  --white: #f4f6f9;
+  --muted: #8a9bb0;
+  --card: #152030;
+  --border: rgba(255,255,255,0.08);
+  --sidebar-w: 220px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  display: flex;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: #0a1520;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100vh;
+}
+.sidebar-logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-mark { font-family: 'DM Serif Display', serif; font-size: 22px; }
+.logo-mark span { color: var(--teal); }
+.logo-sub { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+.sidebar-nav { flex: 1; padding: 12px 0; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 20px; cursor: pointer;
+  font-size: 13px; color: var(--muted);
+  transition: all 0.2s; border-left: 3px solid transparent;
+  position: relative;
+}
+.nav-item:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+.nav-item.active { color: var(--white); border-left-color: var(--teal); background: rgba(0,201,167,0.06); }
+.nav-item .icon { font-size: 15px; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--red); color: white;
+  font-size: 10px; font-weight: 600;
+  padding: 1px 6px; border-radius: 10px;
+  font-family: 'DM Mono', monospace;
+  display: none;
+}
+.nav-badge.show { display: block; }
+
+.sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+.sidebar-footer .version { color: var(--teal); }
+
+/* ── MAIN CONTENT ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.topbar {
+  height: 52px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  flex-shrink: 0;
+  background: #0a1520;
+}
+.topbar-title { font-size: 14px; font-weight: 600; }
+.topbar-sub { font-size: 12px; color: var(--muted); }
+.topbar-spacer { flex: 1; }
+.topbar-stats { display: flex; gap: 20px; }
+.tstat { text-align: right; }
+.tstat-val { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--teal); line-height: 1; }
+.tstat-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+}
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── PANELS ── */
+.panel { display: none; animation: fadeUp 0.3s ease; }
+.panel.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── UPLOAD PANEL ── */
+.upload-area {
+  border: 2px dashed rgba(0,201,167,0.25);
+  border-radius: 16px;
+  padding: 52px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: rgba(0,201,167,0.02);
+  max-width: 700px; margin: 0 auto;
+}
+.upload-area:hover, .upload-area.over {
+  border-color: var(--teal);
+  background: rgba(0,201,167,0.06);
+}
+.upload-icon { font-size: 44px; margin-bottom: 14px; display: block; }
+.upload-area h2 { font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; margin-bottom: 6px; }
+.upload-area p { color: var(--muted); font-size: 13px; margin-bottom: 22px; line-height: 1.6; }
+
+.file-chips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.chip {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  padding: 4px 12px; border-radius: 20px;
+  border: 1px solid var(--border); color: var(--muted);
+}
+.chip.teal { border-color: rgba(0,201,167,0.4); color: var(--teal); background: rgba(0,201,167,0.06); }
+
+.file-queue { margin-top: 28px; max-width: 700px; margin-left: auto; margin-right: auto; }
+.file-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 16px;
+  margin-bottom: 8px; font-size: 13px;
+}
+.file-item .file-icon { font-size: 20px; flex-shrink: 0; }
+.file-item .file-info { flex: 1; }
+.file-item .file-name { font-weight: 500; }
+.file-item .file-size { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.file-item .remove-btn { cursor: pointer; color: var(--muted); font-size: 16px; padding: 4px; }
+.file-item .remove-btn:hover { color: var(--red); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: 8px;
+  font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: none; transition: all 0.2s; text-decoration: none;
+}
+.btn-primary { background: var(--teal); color: var(--navy); }
+.btn-primary:hover { background: var(--teal-dim); }
+.btn-secondary { background: transparent; border: 1.5px solid var(--border); color: var(--white); }
+.btn-secondary:hover { border-color: var(--muted); }
+.btn-amber { background: var(--amber); color: var(--navy); }
+.btn-amber:hover { opacity: 0.9; }
+.btn-red { background: rgba(232,93,93,0.15); color: var(--red); border: 1px solid rgba(232,93,93,0.3); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-lg { padding: 13px 28px; font-size: 14px; }
+
+/* ── PROCESS SCREEN ── */
+.process-wrap { max-width: 560px; margin: 20px auto; text-align: center; }
+.process-wrap h2 { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; margin-bottom: 6px; }
+.process-wrap .sub { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+.proc-list { text-align: left; }
+.proc-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 13px 18px;
+  margin-bottom: 8px; opacity: 0.35; transition: all 0.4s;
+}
+.proc-item.running { opacity: 1; border-color: rgba(0,201,167,0.35); }
+.proc-item.done { opacity: 1; border-color: rgba(0,201,167,0.2); }
+.proc-item .p-icon { font-size: 18px; width: 24px; text-align: center; }
+.proc-item .p-label { flex: 1; font-size: 13px; }
+.proc-item .p-meta { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.proc-item .p-status { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); flex-shrink: 0; }
+.proc-item.running .p-status { color: var(--teal); }
+.proc-item.done .p-status { color: var(--teal); }
+.spinner { display: inline-block; width: 12px; height: 12px; border: 1.5px solid rgba(0,201,167,0.3); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── REVIEW PANEL ── */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px;
+}
+.stat-box .s-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.stat-box .s-val { font-family: 'DM Serif Display', serif; font-size: 32px; line-height: 1; }
+.stat-box .s-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.c-teal { color: var(--teal); }
+.c-amber { color: var(--amber); }
+.c-red { color: var(--red); }
+.c-blue { color: #82b0ff; }
+
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.section-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+
+/* Issues list */
+.issue-list { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+.issue-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 11px 16px; border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.issue-item:last-child { border-bottom: none; }
+.issue-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.issue-dot.error { background: var(--red); }
+.issue-dot.warning { background: var(--amber); }
+.issue-dot.info { background: #82b0ff; }
+.issue-name { font-weight: 600; margin-bottom: 2px; }
+.issue-meta { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; }
+.issue-fix { margin-left: auto; flex-shrink: 0; }
+
+/* Merge log */
+.merge-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.merge-item:last-child { border-bottom: none; }
+.merge-tag { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 3px; flex-shrink: 0; }
+.merge-tag.new { background: rgba(0,201,167,0.1); color: var(--teal); border: 1px solid rgba(0,201,167,0.2); }
+.merge-tag.merged { background: rgba(245,166,35,0.1); color: var(--amber); border: 1px solid rgba(245,166,35,0.2); }
+.merge-fields { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; }
+
+/* ── RECORDS TABLE ── */
+.records-toolbar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
+.search-input {
+  flex: 1; background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 14px;
+  color: var(--white); font-family: 'Sora', sans-serif; font-size: 13px;
+  outline: none; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: rgba(0,201,167,0.4); }
+.search-input::placeholder { color: var(--muted); }
+
+.filter-btn {
+  padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); font-size: 12px; cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active { border-color: var(--teal); color: var(--teal); background: rgba(0,201,167,0.06); }
+
+.table-wrap { overflow-x: auto; }
+.records-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+}
+.records-table th {
+  background: var(--navy-mid); font-family: 'DM Mono', monospace;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted); padding: 10px 12px; text-align: left;
+  position: sticky; top: 0; white-space: nowrap;
+}
+.records-table td {
+  padding: 9px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle; white-space: nowrap;
+}
+.records-table tr:hover td { background: rgba(255,255,255,0.02); }
+.records-table tr.has-error td { border-left: 3px solid var(--red); }
+.records-table tr.has-warning td { border-left: 3px solid var(--amber); }
+
+.rel-badge { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+.rel-sub { background: rgba(0,201,167,0.12); color: var(--teal); }
+.rel-spouse { background: rgba(130,176,255,0.12); color: #82b0ff; }
+.rel-child { background: rgba(245,166,35,0.12); color: var(--amber); }
+
+.edit-cell {
+  background: transparent; border: none; color: var(--white);
+  font-family: 'Sora', sans-serif; font-size: 12px; width: 100%;
+  padding: 2px 4px; border-radius: 4px;
+}
+.edit-cell:focus { outline: 1px solid var(--teal); background: rgba(0,201,167,0.05); }
+.edit-cell.missing { color: var(--red); font-style: italic; }
+
+.field-flag { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
+.field-flag.error { background: var(--red); }
+.field-flag.warning { background: var(--amber); }
+
+/* ── EXPORT PANEL ── */
+.export-master-card {
+  background: linear-gradient(135deg, rgba(0,201,167,0.1), rgba(0,201,167,0.04));
+  border: 1.5px solid rgba(0,201,167,0.3); border-radius: 14px;
+  padding: 22px 24px; display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.export-master-card .title { font-size: 15px; font-weight: 600; }
+.export-master-card .sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+.carriers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+.carrier-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 16px 18px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: all 0.2s;
+}
+.carrier-card:hover { border-color: rgba(0,201,167,0.3); }
+.carrier-card.on { border-color: var(--teal); background: rgba(0,201,167,0.06); }
+.carrier-logo { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.carrier-info .c-name { font-size: 14px; font-weight: 600; }
+.carrier-info .c-format { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.carrier-toggle {
+  margin-left: auto; width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid var(--border); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 11px;
+  transition: all 0.2s;
+}
+.carrier-card.on .carrier-toggle { background: var(--teal); border-color: var(--teal); color: var(--navy); }
+
+.export-summary {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px 24px; margin-bottom: 24px;
+}
+.time-saved { display: flex; align-items: center; gap: 32px; }
+.ts-item .ts-val { font-family: 'DM Serif Display', serif; font-size: 28px; }
+.ts-item .ts-label { font-size: 11px; color: var(--muted); }
+.ts-arrow { font-size: 18px; color: var(--muted); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--teal); color: var(--navy);
+  padding: 12px 20px; border-radius: 10px;
+  font-weight: 600; font-size: 13px;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 24px rgba(0,201,167,0.3);
+  opacity: 0; transform: translateY(12px);
+  transition: all 0.3s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* Loading overlay */
+.overlay {
+  position: fixed; inset: 0; background: rgba(13,27,42,0.85);
+  display: none; align-items: center; justify-content: center;
+  z-index: 50; flex-direction: column; gap: 16px;
+}
+.overlay.show { display: flex; }
+.overlay-spinner { width: 40px; height: 40px; border: 3px solid rgba(0,201,167,0.2); border-top-color: var(--teal); border-radius: 50%; animation: spin 1s linear infinite; }
+.overlay-msg { font-size: 14px; color: var(--white); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+.tab {
+  padding: 8px 16px; border-radius: 8px; font-size: 12px;
+  cursor: pointer; border: 1px solid transparent;
+  color: var(--muted); transition: all 0.2s;
+}
+.tab:hover { color: var(--white); }
+.tab.active { background: rgba(0,201,167,0.1); border-color: rgba(0,201,167,0.25); color: var(--teal); }
+
+/* ── RECONCILE PANEL ── */
+.rec-summary-bar {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;
+}
+.rec-stat {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; text-align: center; cursor: pointer; transition: all 0.2s;
+}
+.rec-stat:hover { transform: translateY(-1px); }
+.rec-stat.active-filter { border-color: var(--teal); background: rgba(0,201,167,0.07); }
+.rec-stat .rs-val { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1; }
+.rec-stat .rs-label { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-top: 4px; }
+
+.rec-table-wrap { overflow-x: auto; }
+.rec-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+}
+.rec-table th {
+  background: var(--navy-mid); font-family: 'DM Mono', monospace;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted); padding: 10px 14px; text-align: left;
+  position: sticky; top: 0; white-space: nowrap; z-index: 1;
+}
+.rec-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.rec-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Status pill */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  padding: 3px 10px; border-radius: 20px; white-space: nowrap; font-weight: 500;
+}
+.sp-matched    { background: rgba(0,201,167,0.12); color: var(--teal); border: 1px solid rgba(0,201,167,0.25); }
+.sp-mismatch   { background: rgba(232,93,93,0.12); color: var(--red); border: 1px solid rgba(232,93,93,0.25); }
+.sp-warning    { background: rgba(245,166,35,0.12); color: var(--amber); border: 1px solid rgba(245,166,35,0.25); }
+.sp-inv-only   { background: rgba(130,176,255,0.12); color: #82b0ff; border: 1px solid rgba(130,176,255,0.25); }
+.sp-cen-only   { background: rgba(160,130,255,0.12); color: #b09fff; border: 1px solid rgba(160,130,255,0.25); }
+
+/* Side-by-side value comparison */
+.compare-cell { display: flex; flex-direction: column; gap: 3px; min-width: 100px; }
+.compare-val  { font-size: 12px; }
+.compare-val.match { color: var(--teal); }
+.compare-val.diff  { color: var(--red); font-weight: 600; }
+.compare-val.empty { color: var(--muted); font-style: italic; font-size: 11px; }
+.compare-source { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); }
+
+.vs-divider {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+}
+.vs-line { flex: 1; height: 1px; background: var(--border); }
+.vs-source-tag {
+  padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 500;
+  font-family: 'DM Mono', monospace;
+}
+.vs-invoice { background: rgba(130,176,255,0.1); color: #82b0ff; border: 1px solid rgba(130,176,255,0.2); }
+.vs-census  { background: rgba(160,130,255,0.1); color: #b09fff; border: 1px solid rgba(160,130,255,0.2); }
+
+.premium-badge {
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  color: var(--teal); font-weight: 500;
+}
+
+.rec-empty {
+  text-align: center; padding: 60px 20px; color: var(--muted);
+}
+.rec-empty .big-icon { font-size: 40px; margin-bottom: 12px; }
+.rec-empty h3 { font-size: 16px; color: var(--white); margin-bottom: 6px; font-family: 'DM Serif Display', serif; font-weight: 400; }
+
+input[type=file] { display: none; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">Census<span>IQ</span></div>
+    <div class="logo-sub">Triton Benefits</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" onclick="showPanel('upload')" id="nav-upload">
+      <span class="icon">📁</span> Upload Files
+    </div>
+    <div class="nav-item" onclick="showPanel('process')" id="nav-process">
+      <span class="icon">⚡</span> Process
+    </div>
+    <div class="nav-item" onclick="showPanel('review')" id="nav-review">
+      <span class="icon">🔍</span> Review
+      <span class="nav-badge" id="badge-issues">0</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('reconcile')" id="nav-reconcile">
+      <span class="icon">⚖️</span> Reconcile
+      <span class="nav-badge" id="badge-reconcile">0</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('records')" id="nav-records">
+      <span class="icon">👥</span> Records
+    </div>
+    <div class="nav-item" onclick="showPanel('export')" id="nav-export">
+      <span class="icon">📤</span> Export
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div>CensusIQ v1.0</div>
+    <div class="version">Triton Benefits & HR</div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Upload Census Files</div>
+      <div class="topbar-sub" id="topbar-sub">Drag in your spreadsheets and PDFs to begin</div>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-stats" id="topbar-stats" style="display:none">
+      <div class="tstat">
+        <div class="tstat-val" id="ts-total">—</div>
+        <div class="tstat-label">Employees</div>
+      </div>
+      <div class="tstat">
+        <div class="tstat-val" id="ts-deps" style="color:var(--amber)">—</div>
+        <div class="tstat-label">Dependents</div>
+      </div>
+      <div class="tstat">
+        <div class="tstat-val" id="ts-issues" style="color:var(--red)">—</div>
+        <div class="tstat-label">Issues</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary" onclick="resetAll()" style="margin-left:8px; font-size:12px; padding:7px 14px">↺ New Session</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ── UPLOAD PANEL ── -->
+    <div class="panel active" id="panel-upload">
+
+      <!-- Company Name Field -->
+      <div style="max-width:700px;margin:0 auto 24px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;">
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="flex:1">
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">
+                Group / Client Name <span style="color:var(--teal)">*</span>
+              </div>
+              <input type="text" id="company-name-input"
+                placeholder="e.g. APM Hexseal, Triton Benefits Group..."
+                style="width:100%;background:transparent;border:none;color:var(--white);font-family:'Sora',sans-serif;font-size:15px;font-weight:500;outline:none;"
+                oninput="saveCompanyName(this.value)">
+            </div>
+            <div style="font-size:28px;">🏢</div>
+          </div>
+          <div style="height:1px;background:var(--border);margin:12px 0 8px;"></div>
+          <div style="font-size:11px;color:var(--muted);">This identifies the group on all exported census files. Auto-detected from carrier invoices.</div>
+        </div>
+      </div>
+      <div class="upload-area" id="upload-zone"
+           ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFiles(event)"
+           onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" multiple accept=".xlsx,.xls,.csv,.pdf" onchange="addFiles(event)">
+        <span class="upload-icon">📋</span>
+        <h2>Drop your census files here</h2>
+        <p>Mix and match — upload the messy spreadsheet <em>and</em> the carrier PDF invoice.<br>CensusIQ will merge them automatically, filling in what each file is missing.</p>
+        <button class="btn btn-primary" onclick="event.stopPropagation()">Choose Files</button>
+        <div class="file-chips">
+          <div class="chip teal">Excel .xlsx</div>
+          <div class="chip teal">CSV</div>
+          <div class="chip teal">PDF Invoice</div>
+          <div class="chip">Payroll Export</div>
+          <div class="chip">Salesforce</div>
+          <div class="chip">ADP Report</div>
+          <div class="chip">Carrier Invoice</div>
+        </div>
+      </div>
+
+      <div class="file-queue" id="file-queue"></div>
+
+      <div style="text-align:center; margin-top:20px" id="process-btn-wrap" style="display:none">
+        <button class="btn btn-primary btn-lg" id="process-btn" onclick="startProcess()" disabled>
+          ⚡ Process All Files
+        </button>
+      </div>
+    </div>
+
+    <!-- ── PROCESS PANEL ── -->
+    <div class="panel" id="panel-process">
+      <div class="process-wrap">
+        <h2>Processing your files</h2>
+        <p class="sub">CensusIQ is reading, merging, and normalizing all data sources.</p>
+        <div class="proc-list" id="proc-list">
+          <div class="proc-item" id="pi-parse">
+            <span class="p-icon">📂</span>
+            <div>
+              <div class="p-label">Parsing all uploaded files</div>
+              <div class="p-meta">Excel column detection · PDF table extraction</div>
+            </div>
+            <div class="p-status" id="ps-parse">Waiting</div>
+          </div>
+          <div class="proc-item" id="pi-map">
+            <span class="p-icon">🗺️</span>
+            <div>
+              <div class="p-label">Mapping columns to standard schema</div>
+              <div class="p-meta">Last Name, DOB, SSN, Relationship, Plan…</div>
+            </div>
+            <div class="p-status" id="ps-map">Waiting</div>
+          </div>
+          <div class="proc-item" id="pi-date">
+            <span class="p-icon">📅</span>
+            <div>
+              <div class="p-label">Normalizing dates</div>
+              <div class="p-meta">Converting all formats to MM/DD/YYYY</div>
+            </div>
+            <div class="p-status" id="ps-date">Waiting</div>
+          </div>
+          <div class="proc-item" id="pi-merge">
+            <span class="p-icon">🔀</span>
+            <div>
+              <div class="p-label">Cross-source merging</div>
+              <div class="p-meta">Matching employees across PDF + spreadsheet</div>
+            </div>
+            <div class="p-status" id="ps-merge">Waiting</div>
+          </div>
+          <div class="proc-item" id="pi-dep">
+            <span class="p-icon">👨‍👩‍👧</span>
+            <div>
+              <div class="p-label">Rebuilding dependent relationships</div>
+              <div class="p-meta">Linking spouses &amp; children to subscribers</div>
+            </div>
+            <div class="p-status" id="ps-dep">Waiting</div>
+          </div>
+          <div class="proc-item" id="pi-flag">
+            <span class="p-icon">🚩</span>
+            <div>
+              <div class="p-label">Validating &amp; flagging issues</div>
+              <div class="p-meta">Missing fields, duplicate SSNs, date errors</div>
+            </div>
+            <div class="p-status" id="ps-flag">Waiting</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REVIEW PANEL ── -->
+    <div class="panel" id="panel-review">
+      <div class="stats-row" id="stats-row">
+        <div class="stat-box">
+          <div class="s-label">Subscribers</div>
+          <div class="s-val c-teal" id="rv-subs">—</div>
+          <div class="s-sub">Employees enrolled</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Dependents</div>
+          <div class="s-val c-blue" id="rv-deps">—</div>
+          <div class="s-sub">Spouses + children</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Errors</div>
+          <div class="s-val c-red" id="rv-errors">—</div>
+          <div class="s-sub">Must fix before export</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Cross-Source Merges</div>
+          <div class="s-val c-amber" id="rv-merges">—</div>
+          <div class="s-sub">Records auto-combined</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('issues')">🚩 Issues</div>
+        <div class="tab" onclick="switchTab('merges')">🔀 Merge Log</div>
+        <div class="tab" onclick="switchTab('logs')">📋 Parse Log</div>
+      </div>
+
+      <div id="tab-issues">
+        <div class="section-head">
+          <div class="section-label">Issues Requiring Attention</div>
+          <span id="issues-count" style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace"></span>
+        </div>
+        <div class="issue-list" id="issues-list"></div>
+        <div id="no-issues" style="display:none; text-align:center; padding:40px; color:var(--muted);">
+          ✅ No issues found — data looks clean!
+        </div>
+      </div>
+
+      <div id="tab-merges" style="display:none">
+        <div class="section-head">
+          <div class="section-label">Cross-Source Merge Activity</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;">
+          <div id="merge-log-list"></div>
+        </div>
+      </div>
+
+      <div id="tab-logs" style="display:none">
+        <div class="section-head"><div class="section-label">Parser Output</div></div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:1.8;" id="parse-logs"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="showPanel('records')">Review & Edit Records →</button>
+        <button class="btn btn-secondary" id="btn-go-reconcile" onclick="showPanel('reconcile')" style="display:none">
+          ⚖️ View Reconcile Report
+          <span id="reconcile-issues-badge" style="background:var(--red);color:white;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:6px"></span>
+        </button>
+        <button class="btn btn-amber" onclick="showPanel('export')">Skip to Export →</button>
+      </div>
+    </div>
+
+    <!-- ── RECONCILE PANEL ── -->
+    <div class="panel" id="panel-reconcile">
+
+      <!-- Summary bar -->
+      <div class="rec-summary-bar" id="rec-summary-bar">
+        <div class="rec-stat active-filter" id="rsf-all" onclick="filterReconcile('all')">
+          <div class="rs-val" id="rs-total" style="color:var(--white)">—</div>
+          <div class="rs-label">Total</div>
+        </div>
+        <div class="rec-stat" id="rsf-mismatch" onclick="filterReconcile('mismatch')">
+          <div class="rs-val c-red" id="rs-mismatch">—</div>
+          <div class="rs-label">Tier Mismatch</div>
+        </div>
+        <div class="rec-stat" id="rsf-invoice_only" onclick="filterReconcile('invoice_only')">
+          <div class="rs-val c-blue" id="rs-invoice_only">—</div>
+          <div class="rs-label">Invoice Only</div>
+        </div>
+        <div class="rec-stat" id="rsf-census_only" onclick="filterReconcile('census_only')">
+          <div class="rs-val" id="rs-census_only" style="color:#b09fff">—</div>
+          <div class="rs-label">Census Only</div>
+        </div>
+        <div class="rec-stat" id="rsf-matched" onclick="filterReconcile('matched')">
+          <div class="rs-val c-teal" id="rs-matched">—</div>
+          <div class="rs-label">Clean Match</div>
+        </div>
+      </div>
+
+      <!-- Invoice meta bar -->
+      <div id="rec-meta-bar" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 18px; margin-bottom:18px; display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+        <div style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">INVOICE</div>
+        <div id="rec-meta-content" style="display:flex; gap:20px; flex-wrap:wrap; font-size:12px;"></div>
+      </div>
+
+      <!-- Column headers legend -->
+      <div class="vs-divider" style="margin-bottom:14px">
+        <span class="vs-source-tag vs-invoice">📄 Carrier Invoice</span>
+        <div class="vs-line"></div>
+        <span style="font-size:10px">vs.</span>
+        <div class="vs-line"></div>
+        <span class="vs-source-tag vs-census">📊 Census Spreadsheet</span>
+      </div>
+
+      <!-- Empty state -->
+      <div class="rec-empty" id="rec-empty" style="display:none">
+        <div class="big-icon">⚖️</div>
+        <h3>No reconcile data yet</h3>
+        <p style="font-size:13px">Upload both a carrier invoice (PDF) and a census spreadsheet,<br>then process them together to see the side-by-side comparison.</p>
+      </div>
+
+      <!-- Reconcile table -->
+      <div class="rec-table-wrap" id="rec-table-wrap">
+        <table class="rec-table">
+          <thead>
+            <tr>
+              <th style="width:180px">Employee</th>
+              <th>Status</th>
+              <th>📄 Invoice Coverage</th>
+              <th>📄 Invoice Premium</th>
+              <th>📄 Invoice Period</th>
+              <th>📊 Census Coverage</th>
+              <th>📊 Census DOB</th>
+              <th>📊 Census Hire Date</th>
+              <th>Discrepancies</th>
+            </tr>
+          </thead>
+          <tbody id="rec-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Export reconcile report -->
+      <div style="margin-top:20px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="exportReconcile()">📋 Export Reconcile Report</button>
+        <button class="btn btn-secondary" onclick="filterReconcile('mismatch')" id="rec-filter-issues-btn">
+          Show Mismatches Only
+        </button>
+        <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace" id="rec-count-label"></span>
+      </div>
+    </div>
+
+    <!-- ── RECORDS PANEL ── -->
+    <div class="panel" id="panel-records">
+      <div class="records-toolbar">
+        <input type="text" class="search-input" placeholder="Search by name, SSN, plan…" oninput="filterRecords(this.value)" id="search-box">
+        <button class="filter-btn" onclick="filterBy('all')" id="filter-all" style="border-color:var(--teal);color:var(--teal)">All</button>
+        <button class="filter-btn" onclick="filterBy('errors')">Errors Only</button>
+        <button class="filter-btn" onclick="filterBy('missing')">Missing Data</button>
+        <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap" id="rec-count"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="records-table" id="records-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th>Relationship</th>
+              <th>Gender</th>
+              <th>Date of Birth</th>
+              <th>State</th>
+              <th>Zip</th>
+              <th>Plan Election</th>
+              <th>Status</th>
+              <th>SSN</th>
+              <th>Hire Date</th>
+              <th>Sources</th>
+            </tr>
+          </thead>
+          <tbody id="records-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── EXPORT PANEL ── -->
+    <div class="panel" id="panel-export">
+      <div class="export-master-card">
+        <div>
+          <div class="title">📊 Triton Benefits Master Census</div>
+          <div class="sub" id="export-summary-sub">Standardized format — ready for any carrier</div>
+        </div>
+        <button class="btn btn-primary" onclick="downloadExport('triton')">⬇ Download</button>
+      </div>
+
+      <div class="section-head" style="margin-bottom:14px">
+        <div class="section-label">Carrier-Specific Files</div>
+        <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">Click to select</span>
+      </div>
+
+      <div class="carriers-grid">
+        <div class="carrier-card on" id="cc-BCBS" onclick="toggleCarrier('BCBS')">
+          <div class="carrier-logo" style="background:rgba(0,48,135,0.3)">🔵</div>
+          <div class="carrier-info">
+            <div class="c-name">Blue Cross Blue Shield</div>
+            <div class="c-format">BCBS Standard · .xlsx · 11 columns</div>
+          </div>
+          <div class="carrier-toggle">✓</div>
+        </div>
+        <div class="carrier-card on" id="cc-Aetna" onclick="toggleCarrier('Aetna')">
+          <div class="carrier-logo" style="background:rgba(123,12,42,0.3)">🔴</div>
+          <div class="carrier-info">
+            <div class="c-name">Aetna</div>
+            <div class="c-format">Aetna RFP Format · .xlsx · 11 columns</div>
+          </div>
+          <div class="carrier-toggle">✓</div>
+        </div>
+        <div class="carrier-card" id="cc-UHC" onclick="toggleCarrier('UHC')">
+          <div class="carrier-logo" style="background:rgba(0,51,102,0.3)">💙</div>
+          <div class="carrier-info">
+            <div class="c-name">United Healthcare</div>
+            <div class="c-format">UHC Group Census · .xlsx · 11 columns</div>
+          </div>
+          <div class="carrier-toggle"></div>
+        </div>
+        <div class="carrier-card" id="cc-Cigna" onclick="toggleCarrier('Cigna')">
+          <div class="carrier-logo" style="background:rgba(0,107,80,0.3)">💚</div>
+          <div class="carrier-info">
+            <div class="c-name">Cigna</div>
+            <div class="c-format">Cigna Standard · .xlsx · 10 columns</div>
+          </div>
+          <div class="carrier-toggle"></div>
+        </div>
+      </div>
+
+      <div class="export-summary">
+        <div class="s-label" style="margin-bottom:12px">Estimated Time Saved This Submission</div>
+        <div class="time-saved">
+          <div class="ts-item">
+            <div class="ts-val" style="color:var(--red)">2.5 hrs</div>
+            <div class="ts-label">Manual process</div>
+          </div>
+          <div class="ts-arrow">→</div>
+          <div class="ts-item">
+            <div class="ts-val" style="color:var(--teal)">~4 min</div>
+            <div class="ts-label">With CensusIQ</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div class="ts-val" style="color:var(--white);font-size:22px">97%</div>
+            <div class="ts-label">Time reduction</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center">
+        <button class="btn btn-amber btn-lg" onclick="downloadAll()">⬇ Export All Selected</button>
+        <span style="font-size:12px;color:var(--muted)" id="export-count">2 carriers + master = 3 files</span>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay">
+  <div class="overlay-spinner"></div>
+  <div class="overlay-msg" id="overlay-msg">Processing…</div>
+</div>
+
+<script>
+// ── STATE ──
+let queuedFiles = [];
+let processedStats = null;
+let allRecords = [];
+let allIssues = [];
+let filteredRecords = [];
+let currentFilter = 'all';
+let selectedCarriers = new Set(['BCBS','Aetna']);
+let companyName = '';
+let reconcileData = [];
+let reconcileFilter = 'all';
+
+// ── COMPANY NAME ──
+function saveCompanyName(val) {
+  companyName = val;
+  fetch('/company', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({name: val})
+  });
+}
+
+function setCompanyIfEmpty(name) {
+  if (name && !companyName) {
+    companyName = name;
+    const inp = document.getElementById('company-name-input');
+    if (inp) {
+      inp.value = name;
+      inp.style.color = 'var(--teal)';
+      setTimeout(() => inp.style.color = '', 2000);
+    }
+    fetch('/company', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name})
+    });
+    toast(`🏢 Group name auto-detected: "${name}"`);
+  }
+}
+
+// ── NAV ──
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+
+  const titles = {
+    upload: ['Upload Census Files', 'Drag in your spreadsheets and PDFs to begin'],
+    process: ['Processing Files', 'Parsing, mapping, and merging your data sources'],
+    review: ['Review Results', 'Check issues and cross-source merges before export'],
+    reconcile: ['Reconcile', 'Side-by-side: invoice vs. census — catch every discrepancy'],
+    records: ['Employee Records', 'Review and edit individual records'],
+    export: ['Export Files', 'Download standardized and carrier-specific census files'],
+  };
+  document.getElementById('topbar-title').textContent = titles[name][0];
+  document.getElementById('topbar-sub').textContent = titles[name][1];
+
+  // Auto-load reconcile data when navigating to that panel
+  if (name === 'reconcile' && reconcileData.length === 0) {
+    loadReconcile();
+  }
+}
+
+// ── UPLOAD ──
+function dragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('over'); }
+function dragLeave(e) { document.getElementById('upload-zone').classList.remove('over'); }
+function dropFiles(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('over');
+  addFileList(e.dataTransfer.files);
+}
+function addFiles(e) { addFileList(e.target.files); }
+
+function addFileList(files) {
+  for (const f of files) {
+    if (!queuedFiles.find(q => q.name === f.name)) {
+      queuedFiles.push(f);
+    }
+  }
+  renderQueue();
+}
+
+function renderQueue() {
+  const q = document.getElementById('file-queue');
+  const btn = document.getElementById('process-btn');
+  if (!queuedFiles.length) { q.innerHTML = ''; btn.disabled = true; return; }
+
+  const icons = { xlsx:'📊', xls:'📊', csv:'📋', pdf:'📄' };
+  q.innerHTML = queuedFiles.map((f, i) => {
+    const ext = f.name.split('.').pop().toLowerCase();
+    const icon = icons[ext] || '📎';
+    const kb = (f.size / 1024).toFixed(0);
+    return `<div class="file-item">
+      <span class="file-icon">${icon}</span>
+      <div class="file-info">
+        <div class="file-name">${f.name}</div>
+        <div class="file-size">${ext.toUpperCase()} · ${kb} KB</div>
+      </div>
+      <span class="remove-btn" onclick="removeFile(${i})">✕</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('process-btn-wrap').style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = `⚡ Process ${queuedFiles.length} File${queuedFiles.length > 1 ? 's' : ''}`;
+}
+
+function removeFile(i) {
+  queuedFiles.splice(i, 1);
+  renderQueue();
+}
+
+// ── PROCESS ──
+async function startProcess() {
+  if (!queuedFiles.length) return;
+
+  // Upload files first
+  showOverlay('Uploading files…');
+  const fd = new FormData();
+  for (const f of queuedFiles) fd.append('files', f);
+
+  try {
+    await fetch('/upload', { method: 'POST', body: fd });
+  } catch(e) {
+    hideOverlay();
+    toast('Upload failed: ' + e.message);
+    return;
+  }
+  hideOverlay();
+
+  // Switch to process panel and animate
+  showPanel('process');
+  await animateProcess();
+
+  // Actually call the backend
+  try {
+    const resp = await fetch('/process', { method: 'POST' });
+    const data = await resp.json();
+
+    if (data.ok) {
+      processedStats = data.stats;
+      allIssues = data.issues || [];
+
+      // Auto-detect company name from invoice if not set
+      if (data.detected_company) {
+        setCompanyIfEmpty(data.detected_company);
+      }
+
+      // Load records
+      const recResp = await fetch('/records');
+      const recData = await recResp.json();
+      allRecords = recData.records || [];
+
+      updateTopbarStats();
+      populateReview(data);
+      populateRecordsTable(allRecords);
+      updateExportSummary();
+
+      // Load reconcile data if available
+      if (data.reconcile_summary && data.reconcile_summary.has_data) {
+        populateReconcileSummary(data.reconcile_summary);
+        await loadReconcile();
+      }
+
+      toast(`✅ Processed ${data.stats.total} records from ${data.stats.sources} file${data.stats.sources > 1 ? 's' : ''}`);
+
+      setTimeout(() => showPanel('review'), 400);
+    }
+  } catch(e) {
+    toast('Processing error: ' + e.message);
+  }
+}
+
+async function animateProcess() {
+  const steps = [
+    { id: 'pi-parse', ps: 'ps-parse', label: 'Parsing...', done: 'Complete', ms: 600 },
+    { id: 'pi-map',   ps: 'ps-map',   label: 'Mapping...', done: 'Mapped',   ms: 700 },
+    { id: 'pi-date',  ps: 'ps-date',  label: 'Normalizing...', done: 'Done', ms: 500 },
+    { id: 'pi-merge', ps: 'ps-merge', label: 'Merging...', done: 'Merged',   ms: 800 },
+    { id: 'pi-dep',   ps: 'ps-dep',   label: 'Linking...', done: 'Linked',   ms: 600 },
+    { id: 'pi-flag',  ps: 'ps-flag',  label: 'Validating...', done: 'Done',  ms: 500 },
+  ];
+
+  for (const s of steps) {
+    const item = document.getElementById(s.id);
+    const ps = document.getElementById(s.ps);
+    item.classList.add('running');
+    ps.innerHTML = `<span class="spinner"></span>`;
+    await sleep(s.ms);
+    item.classList.remove('running');
+    item.classList.add('done');
+    ps.textContent = s.done;
+  }
+}
+
+// ── REVIEW ──
+function populateReview(data) {
+  const s = data.stats;
+  document.getElementById('rv-subs').textContent = s.subscribers;
+  document.getElementById('rv-deps').textContent = s.dependents;
+  document.getElementById('rv-errors').textContent = s.errors;
+  document.getElementById('rv-merges').textContent = s.cross_source_merges;
+
+  // Issues
+  const il = document.getElementById('issues-list');
+  const ni = document.getElementById('no-issues');
+  const ic = document.getElementById('issues-count');
+
+  if (!allIssues.length) {
+    il.style.display = 'none';
+    ni.style.display = 'block';
+    ic.textContent = '0 issues';
+  } else {
+    il.style.display = 'block';
+    ni.style.display = 'none';
+    ic.textContent = `${allIssues.length} issue${allIssues.length !== 1 ? 's' : ''}`;
+    il.innerHTML = allIssues.slice(0, 30).map(iss => `
+      <div class="issue-item">
+        <div class="issue-dot ${iss.severity}"></div>
+        <div>
+          <div class="issue-name">${iss.employee}</div>
+          <div class="issue-meta">${iss.field} · ${iss.msg}</div>
+        </div>
+        <div class="issue-fix">
+          <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px" onclick="jumpToRecord(${iss.row})">Edit</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // Badge
+  const badge = document.getElementById('badge-issues');
+  if (allIssues.length) {
+    badge.textContent = allIssues.length;
+    badge.classList.add('show');
+  }
+
+  // Merge log
+  const ml = document.getElementById('merge-log-list');
+  ml.innerHTML = (data.merge_log || []).slice(0, 40).map(m => `
+    <div class="merge-item">
+      <span class="merge-tag ${m.action}">${m.action.toUpperCase()}</span>
+      <span>${m.name || 'Unknown'}</span>
+      <span class="merge-fields">${m.source || ''} ${m.filled ? '→ filled: ' + m.filled.join(', ') : ''}</span>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:12px">No merge activity</div>';
+
+  // Logs
+  document.getElementById('parse-logs').innerHTML = (data.logs || []).join('<br>') || 'No log output';
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tabs .tab').forEach((t, i) => {
+    const tabs = ['issues','merges','logs'];
+    t.classList.toggle('active', tabs[i] === name);
+  });
+  document.getElementById('tab-issues').style.display = name === 'issues' ? '' : 'none';
+  document.getElementById('tab-merges').style.display = name === 'merges' ? '' : 'none';
+  document.getElementById('tab-logs').style.display = name === 'logs' ? '' : 'none';
+}
+
+// ── RECORDS TABLE ──
+function populateRecordsTable(records) {
+  filteredRecords = records;
+  renderTable(filteredRecords);
+  document.getElementById('rec-count').textContent = `${records.length} records`;
+}
+
+function renderTable(records) {
+  const errorRows = new Set(allIssues.filter(i => i.severity === 'error').map(i => i.row));
+  const warnRows = new Set(allIssues.filter(i => i.severity === 'warning').map(i => i.row));
+
+  const getFlag = (idx, field) => {
+    const e = allIssues.find(i => i.row === idx && i.field === field);
+    if (!e) return '';
+    return `<span class="field-flag ${e.severity}"></span>`;
+  };
+
+  const relBadge = r => {
+    const cls = r === 'Subscriber' ? 'rel-sub' : r === 'Spouse' ? 'rel-spouse' : 'rel-child';
+    return r ? `<span class="rel-badge ${cls}">${r}</span>` : '';
+  };
+
+  const realIdx = (visIdx) => allRecords.indexOf(filteredRecords[visIdx]);
+
+  document.getElementById('records-tbody').innerHTML = records.map((rec, vi) => {
+    const ri = allRecords.indexOf(rec);
+    const rowClass = errorRows.has(ri) ? 'has-error' : warnRows.has(ri) ? 'has-warning' : '';
+    const sources = rec._sources || (rec._source ? [rec._source] : []);
+    const srcDisplay = sources.length > 1
+      ? `<span style="color:var(--amber);font-size:10px;font-family:'DM Mono',monospace">✦ ${sources.length} sources</span>`
+      : `<span style="color:var(--muted);font-size:10px;font-family:'DM Mono',monospace">${sources[0] || ''}</span>`;
+
+    const ed = (field, val) => {
+      const cls = !val ? 'missing' : '';
+      const ph = !val ? `(missing)` : '';
+      return `<input class="edit-cell ${cls}" value="${val||''}" placeholder="${ph}"
+               onchange="updateRecord(${ri}, '${field}', this.value)"
+               onfocus="this.select()">`;
+    };
+
+    return `<tr class="${rowClass}">
+      <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${ri+1}</td>
+      <td>${ed('last_name', rec.last_name)}${getFlag(ri,'last_name')}</td>
+      <td>${ed('first_name', rec.first_name)}${getFlag(ri,'first_name')}</td>
+      <td>${relBadge(rec.relationship)}</td>
+      <td style="text-align:center">${ed('gender', rec.gender)}${getFlag(ri,'gender')}</td>
+      <td>${ed('dob', rec.dob)}${getFlag(ri,'dob')}</td>
+      <td>${ed('state', rec.state)}${getFlag(ri,'state')}</td>
+      <td>${ed('zip', rec.zip)}${getFlag(ri,'zip')}</td>
+      <td>${ed('plan_election', rec.plan_election)}${getFlag(ri,'plan_election')}</td>
+      <td>${ed('emp_status', rec.emp_status)}</td>
+      <td>${ed('ssn', rec.ssn)}${getFlag(ri,'ssn')}</td>
+      <td>${ed('hire_date', rec.hire_date)}</td>
+      <td>${srcDisplay}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function updateRecord(idx, field, value) {
+  try {
+    const resp = await fetch('/records/update', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({index: idx, field, value})
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      allRecords[idx][field] = value;
+      // Reload issues silently
+      const recResp = await fetch('/records');
+      const recData = await recResp.json();
+      allIssues = recData.issues || [];
+      document.getElementById('badge-issues').textContent = allIssues.length;
+    }
+  } catch(e) {}
+}
+
+function filterRecords(query) {
+  if (!query) {
+    filteredRecords = allRecords;
+  } else {
+    const q = query.toLowerCase();
+    filteredRecords = allRecords.filter(r =>
+      Object.values(r).some(v => v && String(v).toLowerCase().includes(q))
+    );
+  }
+  renderTable(filteredRecords);
+  document.getElementById('rec-count').textContent = `${filteredRecords.length} of ${allRecords.length} records`;
+}
+
+function filterBy(type) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  currentFilter = type;
+  if (type === 'errors') {
+    const errorRows = new Set(allIssues.filter(i => i.severity === 'error').map(i => i.row));
+    filteredRecords = allRecords.filter((_, i) => errorRows.has(i));
+  } else if (type === 'missing') {
+    filteredRecords = allRecords.filter(r =>
+      !r.dob || !r.gender || !r.state || !r.plan_election
+    );
+  } else {
+    filteredRecords = allRecords;
+  }
+  renderTable(filteredRecords);
+  document.getElementById('rec-count').textContent = `${filteredRecords.length} of ${allRecords.length} records`;
+}
+
+function jumpToRecord(row) {
+  showPanel('records');
+  document.getElementById('search-box').value = '';
+  filteredRecords = allRecords;
+  renderTable(filteredRecords);
+  setTimeout(() => {
+    const rows = document.querySelectorAll('#records-tbody tr');
+    if (rows[row]) {
+      rows[row].scrollIntoView({behavior:'smooth', block:'center'});
+      rows[row].style.outline = '2px solid var(--teal)';
+      setTimeout(() => rows[row].style.outline = '', 2000);
+    }
+  }, 100);
+}
+
+// ── EXPORT ──
+function toggleCarrier(c) {
+  const card = document.getElementById('cc-' + c);
+  const tog = card.querySelector('.carrier-toggle');
+  if (selectedCarriers.has(c)) {
+    selectedCarriers.delete(c);
+    card.classList.remove('on');
+    tog.textContent = '';
+  } else {
+    selectedCarriers.add(c);
+    card.classList.add('on');
+    tog.textContent = '✓';
+  }
+  const n = selectedCarriers.size;
+  document.getElementById('export-count').textContent = `${n} carrier${n!==1?'s':''} + master = ${n+1} files`;
+}
+
+function updateExportSummary() {
+  if (!processedStats) return;
+  const s = processedStats;
+  document.getElementById('export-summary-sub').textContent =
+    `${s.subscribers} employees · ${s.dependents} dependents · All columns standardized`;
+  document.getElementById('ts-total').textContent = s.subscribers;
+  document.getElementById('ts-deps').textContent = s.dependents;
+  document.getElementById('ts-issues').textContent = s.errors + s.warnings;
+  document.getElementById('topbar-stats').style.display = '';
+}
+
+async function downloadExport(carrier) {
+  if (!allRecords.length) { toast('No records to export — process files first'); return; }
+  showOverlay('Generating ' + carrier + ' file…');
+  try {
+    window.location.href = '/export/' + carrier;
+    setTimeout(hideOverlay, 1500);
+    toast(`✅ ${carrier} census downloaded!`);
+  } catch(e) { hideOverlay(); toast('Export failed'); }
+}
+
+async function downloadAll() {
+  if (!allRecords.length) { toast('No records to export'); return; }
+  showOverlay('Generating all files…');
+  try {
+    const carriers = ['triton', ...Array.from(selectedCarriers)];
+    const resp = await fetch('/export/all', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({carriers})
+    });
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'CensusIQ_Export.zip'; a.click();
+    URL.revokeObjectURL(url);
+    hideOverlay();
+    toast(`✅ ${carriers.length} files exported as ZIP`);
+  } catch(e) { hideOverlay(); toast('Export failed: ' + e.message); }
+}
+
+// ── HELPERS ──
+function updateTopbarStats() {
+  if (!processedStats) return;
+  document.getElementById('ts-total').textContent = processedStats.subscribers;
+  document.getElementById('ts-deps').textContent = processedStats.dependents;
+  document.getElementById('ts-issues').textContent = processedStats.errors + processedStats.warnings;
+  document.getElementById('topbar-stats').style.display = '';
+}
+
+async function resetAll() {
+  await fetch('/reset', {method:'POST'});
+  queuedFiles = [];
+  allRecords = [];
+  allIssues = [];
+  processedStats = null;
+  renderQueue();
+  document.getElementById('records-tbody').innerHTML = '';
+  document.getElementById('issues-list').innerHTML = '';
+  document.getElementById('topbar-stats').style.display = 'none';
+  document.getElementById('badge-issues').classList.remove('show');
+  // Reset process steps
+  document.querySelectorAll('.proc-item').forEach(p => { p.classList.remove('running','done'); });
+  document.querySelectorAll('[id^="ps-"]').forEach(p => { p.textContent = 'Waiting'; });
+  showPanel('upload');
+  toast('Session cleared');
+}
+
+function showOverlay(msg) {
+  document.getElementById('overlay-msg').textContent = msg;
+  document.getElementById('overlay').classList.add('show');
+}
+function hideOverlay() { document.getElementById('overlay').classList.remove('show'); }
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── RECONCILE ──
+async function loadReconcile() {
+  try {
+    const resp = await fetch('/reconcile');
+    const data = await resp.json();
+    reconcileData = data.rows || [];
+    renderReconcile(reconcileData);
+    renderReconcileMeta(data.invoice_meta || {});
+  } catch(e) {
+    console.error('Reconcile load error:', e);
+  }
+}
+
+function populateReconcileSummary(summary) {
+  if (!summary || !summary.has_data) return;
+
+  document.getElementById('rs-total').textContent = summary.total;
+  document.getElementById('rs-mismatch').textContent = summary.mismatch;
+  document.getElementById('rs-invoice_only').textContent = summary.invoice_only;
+  document.getElementById('rs-census_only').textContent = summary.census_only;
+  document.getElementById('rs-matched').textContent = summary.matched + (summary.warning || 0);
+
+  // Show badge on sidebar nav
+  const issues = summary.mismatch + summary.invoice_only;
+  const badge = document.getElementById('badge-reconcile');
+  if (badge) {
+    badge.textContent = issues || summary.total;
+    badge.classList.add('show');
+  }
+
+  // Show reconcile button in review panel
+  const btn = document.getElementById('btn-go-reconcile');
+  if (btn) {
+    btn.style.display = 'inline-flex';
+    const issueBadge = document.getElementById('reconcile-issues-badge');
+    if (issueBadge && issues > 0) {
+      issueBadge.textContent = `${issues} issue${issues !== 1 ? 's' : ''}`;
+    }
+  }
+}
+
+function renderReconcileMeta(meta) {
+  const bar = document.getElementById('rec-meta-bar');
+  const content = document.getElementById('rec-meta-content');
+  if (!meta || !Object.keys(meta).length) { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+  const items = [];
+  if (meta.invoice_no)      items.push(`<span><span style="color:var(--muted)">Invoice #</span> ${meta.invoice_no}</span>`);
+  if (meta.coverage_period) items.push(`<span><span style="color:var(--muted)">Period</span> ${meta.coverage_period}</span>`);
+  if (meta.invoice_date)    items.push(`<span><span style="color:var(--muted)">Date</span> ${meta.invoice_date}</span>`);
+  if (meta.customer_no)     items.push(`<span><span style="color:var(--muted)">Customer #</span> ${meta.customer_no}</span>`);
+  content.innerHTML = items.join('<span style="color:var(--border)">|</span>');
+}
+
+function filterReconcile(filter) {
+  reconcileFilter = filter;
+  // Update active state on stat boxes
+  document.querySelectorAll('.rec-stat').forEach(el => el.classList.remove('active-filter'));
+  const active = document.getElementById('rsf-' + filter) || document.getElementById('rsf-all');
+  if (active) active.classList.add('active-filter');
+
+  const filtered = filter === 'all'
+    ? reconcileData
+    : filter === 'matched'
+    ? reconcileData.filter(r => r.match_status === 'matched' || r.match_status === 'warning')
+    : reconcileData.filter(r => r.match_status === filter);
+
+  renderReconcile(filtered);
+}
+
+function renderReconcile(rows) {
+  const tbody = document.getElementById('rec-tbody');
+  const empty = document.getElementById('rec-empty');
+  const wrap  = document.getElementById('rec-table-wrap');
+  const label = document.getElementById('rec-count-label');
+
+  if (!rows || !rows.length) {
+    if (!reconcileData.length) {
+      // No data at all
+      empty.style.display = 'block';
+      wrap.style.display = 'none';
+    } else {
+      // Filtered to empty
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted)">No records match this filter</td></tr>`;
+      empty.style.display = 'none';
+      wrap.style.display = 'block';
+    }
+    label.textContent = '';
+    return;
+  }
+
+  empty.style.display = 'none';
+  wrap.style.display = 'block';
+  label.textContent = `${rows.length} of ${reconcileData.length} employees`;
+
+  const statusConfig = {
+    matched:      { cls: 'sp-matched',  icon: '✓', label: 'Clean Match' },
+    mismatch:     { cls: 'sp-mismatch', icon: '✗', label: 'Tier Mismatch' },
+    warning:      { cls: 'sp-warning',  icon: '⚠', label: 'Name Diff' },
+    invoice_only: { cls: 'sp-inv-only', icon: '📄', label: 'Invoice Only' },
+    census_only:  { cls: 'sp-cen-only', icon: '📊', label: 'Census Only' },
+  };
+
+  tbody.innerHTML = rows.map((row, i) => {
+    const sc = statusConfig[row.match_status] || statusConfig.matched;
+    const inv = row.invoice || {};
+    const cen = row.census  || {};
+
+    // Coverage comparison
+    const invTier = inv.plan_election || '—';
+    const cenTier = cen.plan_election || '—';
+    const tierMatch = invTier !== '—' && cenTier !== '—' && invTier === cenTier;
+    const tierMismatch = invTier !== '—' && cenTier !== '—' && invTier !== cenTier;
+
+    const invCovHtml = inv.plan_election
+      ? `<div class="compare-val ${tierMismatch ? 'diff' : tierMatch ? 'match' : ''}">${inv.plan_election}</div>
+         ${inv.coverage_code ? `<div class="compare-source">Code: ${inv.coverage_code}</div>` : ''}
+         ${inv.carrier ? `<div class="compare-source">${inv.carrier}</div>` : ''}`
+      : `<div class="compare-val empty">Not on invoice</div>`;
+
+    const cenCovHtml = cen.plan_election
+      ? `<div class="compare-val ${tierMismatch ? 'diff' : tierMatch ? 'match' : ''}">${cen.plan_election}</div>
+         ${cen.source ? `<div class="compare-source">${cen.source.split('/').pop()}</div>` : ''}`
+      : `<div class="compare-val empty">Not in census</div>`;
+
+    // Discrepancy badges
+    const discHtml = row.discrepancies && row.discrepancies.length
+      ? row.discrepancies.map(d => `
+          <div style="margin-bottom:4px">
+            <span style="font-size:10px;font-family:'DM Mono',monospace;color:${d.severity==='error'?'var(--red)':'var(--amber)'}">
+              ${d.field}
+            </span>
+            <div style="font-size:11px;color:var(--muted)">${d.invoice_val} → ${d.census_val}</div>
+          </div>`).join('')
+      : `<span style="color:var(--teal);font-size:11px">None</span>`;
+
+    return `<tr>
+      <td>
+        <div style="font-weight:600">${row.last_name}, ${row.first_name}</div>
+      </td>
+      <td>
+        <span class="status-pill ${sc.cls}">${sc.icon} ${sc.label}</span>
+      </td>
+      <td><div class="compare-cell">${invCovHtml}</div></td>
+      <td>
+        ${inv.premium_total
+          ? `<span class="premium-badge">${inv.premium_total}</span><div class="compare-source">/month</div>`
+          : `<span style="color:var(--muted);font-size:11px">—</span>`}
+      </td>
+      <td style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">
+        ${inv.period || '—'}
+      </td>
+      <td><div class="compare-cell">${cenCovHtml}</div></td>
+      <td style="font-size:11px;color:var(--muted)">${cen.dob || '—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${cen.hire_date || '—'}</td>
+      <td>${discHtml}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function exportReconcile() {
+  if (!reconcileData.length) { toast('No reconcile data to export'); return; }
+
+  // Build a simple CSV export of the reconcile data
+  const headers = ['Last Name','First Name','Status','Invoice Coverage','Invoice Premium','Census Coverage','Census DOB','Discrepancies'];
+  const rows = reconcileData.map(r => [
+    r.last_name,
+    r.first_name,
+    r.match_status,
+    r.invoice?.plan_election || '',
+    r.invoice?.premium_total || '',
+    r.census?.plan_election || '',
+    r.census?.dob || '',
+    (r.discrepancies || []).map(d => `${d.field}: ${d.invoice_val} vs ${d.census_val}`).join('; ')
+  ]);
+
+  const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `CensusIQ_Reconcile_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('✅ Reconcile report exported as CSV');
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+</script>
+</body>
+</html>
