@@ -1,0 +1,9 @@
+[project]
+name = "censusiq"
+version = "1.0.0"
+description = "Employee Census Generator — Triton Benefits & HR Solutions"
+requires-python = ">=3.11"
+license = "MIT"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
